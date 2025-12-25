@@ -23,6 +23,44 @@ The AI-Powered Legal Contract Review & Risk Analysis Assistant is a comprehensiv
 
 ---
 
+## 💡 Real-World Use Cases
+
+### Who Is This For?
+
+This tool helps **anyone dealing with contracts** understand what they're signing:
+
+- **Job Seekers** reviewing employment contracts before accepting offers
+- **Freelancers** analyzing client agreements and service contracts
+- **Students** learning about contract law and legal document analysis
+- **Small Business Owners** reviewing vendor agreements and partnership contracts
+- **Professionals** understanding NDAs, non-compete clauses, and consulting agreements
+
+### Simple Example: Employment Contract
+
+**The Problem:**
+You receive a 20-page employment contract full of legal terms like "indemnification," "consequential damages," and "termination for cause." You don't understand what you're agreeing to.
+
+**The Solution:**
+1. **Upload** your employment contract (PDF/DOCX/TXT)
+2. **Get Instant Analysis** in 30 seconds:
+   - ⚠️ **HIGH RISK**: Unlimited liability clause means you could be responsible for unlimited damages
+   - ⚠️ **HIGH RISK**: At-will termination means you can be fired without notice
+   - ✅ **LOW RISK**: Confidentiality clause is standard 2-year term with clear scope
+   - ⚠️ **MEDIUM RISK**: Non-compete clause restricts work for 1 year after leaving
+
+3. **Ask Questions** like:
+   - "Can I work for a competitor after leaving?"
+   - "What happens if I accidentally share confidential information?"
+   - "How much notice do I get before termination?"
+
+4. **Get Plain English Answers**:
+   - "Based on the non-compete clause, you cannot work for direct competitors in the same industry for 12 months after your employment ends..."
+
+**The Value:**
+You now understand the risks BEFORE signing. You can negotiate better terms or consult a lawyer about specific high-risk clauses.
+
+---
+
 ## ✨ Features
 
 ### 🔍 Intelligent Contract Analysis
