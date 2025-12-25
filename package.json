@@ -1,6 +1,6 @@
 {
-  "name": "compyle-next",
-  "version": "0.1.0",
+  "name": "ai-legal-contract-analyzer",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
