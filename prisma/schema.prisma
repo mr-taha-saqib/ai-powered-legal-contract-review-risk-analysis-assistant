@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Contract {
+  id            String   @id @default(cuid())
+  filename      String   // unique stored filename
+  originalName  String   // original upload filename
+  fileType      String   // "pdf" | "docx" | "txt"
+  fileSize      Int
+  filePath      String   // path to stored file in /uploads
+  extractedText String   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  analysis     Analysis?
+  chatMessages ChatMessage[]
+}
+
+model Analysis {
+  id         String   @id @default(cuid())
+  contractId String   @unique
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  overallRiskLevel String // "low" | "medium" | "high"
+  summary          String @db.Text
+  rawResponse      Json   // full AI response for debugging
+
+  clauses Clause[]
+
+  createdAt DateTime @default(now())
+}
+
+model Clause {
+  id         String   @id @default(cuid())
+  analysisId String
+  analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  type                     String  // "liability" | "termination" | "confidentiality" | "payment"
+  originalText             String  @db.Text
+  riskLevel                String  // "low" | "medium" | "high"
+  plainLanguageExplanation String  @db.Text
+  riskReasons              Json    // array of strings
+  isOverride               Boolean @default(false)
+  overrideJustification    String? @db.Text
+
+  createdAt DateTime @default(now())
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  role          String  // "user" | "assistant"
+  content       String  @db.Text
+  clauseContext String? // optional: clause type if asking about specific clause
+
+  createdAt DateTime @default(now())
+}
