@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { ThemeProvider } from '@/contexts/ThemeContext';
 import Header from '@/components/Header';
 import UploadZone from '@/components/UploadZone';
 import ContractHistory from '@/components/ContractHistory';
@@ -116,17 +115,14 @@ export default function Home() {
   // Don't render main content until disclaimer is acknowledged
   if (!isDisclaimerAcknowledged) {
     return (
-      <ThemeProvider>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <DisclaimerModal onAcknowledge={() => setIsDisclaimerAcknowledged(true)} />
-        </div>
-      </ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <DisclaimerModal onAcknowledge={() => setIsDisclaimerAcknowledged(true)} />
+      </div>
     );
   }
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
         {/* Header */}
         <Header
           contractName={selectedContract?.originalName}
@@ -210,6 +206,5 @@ export default function Home() {
           onClearClauseContext={handleClearClauseContext}
         />
       </div>
-    </ThemeProvider>
   );
 }
