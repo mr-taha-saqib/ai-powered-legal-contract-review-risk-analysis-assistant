@@ -115,14 +115,14 @@ export default function Home() {
   // Don't render main content until disclaimer is acknowledged
   if (!isDisclaimerAcknowledged) {
     return (
-      <div className="min-h-screen bg-[#f5f5f5]">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50">
         <DisclaimerModal onAcknowledge={() => setIsDisclaimerAcknowledged(true)} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex flex-col">
       {/* Header */}
       <Header
         contractName={selectedContract?.originalName}
@@ -135,14 +135,24 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col md:flex-row">
         {/* Left Panel - Upload & History */}
-        <aside className="w-full md:w-[350px] bg-white border-r border-gray-200 p-5 flex flex-col gap-6 overflow-y-auto">
-          <UploadZone
-            onUpload={handleUpload}
-            isUploading={isUploading}
-            uploadProgress={uploadProgress}
-          />
+        <aside className="w-full md:w-[400px] bg-white/80 backdrop-blur-sm border-r-2 border-gray-200/50 p-6 flex flex-col gap-6 overflow-y-auto shadow-xl">
+          <div>
+            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="w-1 h-5 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></span>
+              Upload Contract
+            </h2>
+            <UploadZone
+              onUpload={handleUpload}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+            />
+          </div>
 
           <div className="flex-1 min-h-0">
+            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="w-1 h-5 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></span>
+              Contract History
+            </h2>
             <ContractHistory
               contracts={contracts}
               selectedId={selectedContract?.id}
@@ -154,7 +164,7 @@ export default function Home() {
         </aside>
 
         {/* Right Panel - Analysis Results */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-8 overflow-y-auto">
           {isLoading && selectedContract ? (
             <AnalysisResults
               clauses={[]}
@@ -172,14 +182,17 @@ export default function Home() {
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <FileText className="w-10 h-10 text-gray-300" />
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full blur-2xl opacity-40"></div>
+                <div className="relative w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center shadow-lg">
+                  <FileText className="w-12 h-12 text-indigo-500" />
+                </div>
               </div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-2">
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">
                 No Contract Selected
               </h2>
-              <p className="text-gray-500 max-w-md">
-                Upload a contract or select one from your history to view the analysis.
+              <p className="text-gray-600 max-w-md leading-relaxed">
+                Upload a new contract or select one from your history to view the AI-powered risk analysis.
               </p>
             </div>
           )}
