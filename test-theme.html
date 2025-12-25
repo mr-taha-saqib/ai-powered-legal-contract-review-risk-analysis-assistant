@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Test</title>
+    <style>
+        .light { background: white; color: black; }
+        .dark { background: #1a202c; color: white; }
+        body { transition: all 0.3s; padding: 20px; }
+    </style>
+</head>
+<body class="light">
+    <h1>Theme Test</h1>
+    <button onclick="toggleTheme()">Toggle Theme</button>
+    <div id="status"></div>
+    
+    <script>
+        let theme = 'light';
+        
+        function toggleTheme() {
+            console.log('Before toggle:', theme, document.documentElement.classList.toString());
+            
+            const newTheme = theme === 'light' ? 'dark' : 'light';
+            theme = newTheme;
+            
+            document.body.className = newTheme;
+            
+            if (newTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            document.getElementById('status').textContent = 'Current theme: ' + newTheme + ', Classes: ' + document.documentElement.classList.toString();
+            console.log('After toggle:', theme, document.documentElement.classList.toString());
+        }
+    </script>
+</body>
+</html>

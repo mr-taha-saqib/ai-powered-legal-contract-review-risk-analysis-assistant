@@ -23,7 +23,9 @@
       "Bash(git remote add:*)",
       "Bash(git branch:*)",
       "Bash(git push:*)",
-      "Bash(dir /s \"c:\\\\Users\\\\tahas\\\\ai-legal\\\\src\")"
+      "Bash(dir /s \"c:\\\\Users\\\\tahas\\\\ai-legal\\\\src\")",
+      "Bash(dir:*)",
+      "Bash(powershell -Command \"Get-ChildItem -Name | Select-String config\")"
     ]
   }
 }

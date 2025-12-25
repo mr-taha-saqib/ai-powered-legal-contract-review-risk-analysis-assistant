@@ -33,6 +33,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
+    console.log('Toggling theme from', theme, 'to', newTheme);
+
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
 
@@ -41,6 +43,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       document.documentElement.classList.remove('dark');
     }
+
+    console.log('HTML classes after toggle:', document.documentElement.className);
   };
 
   // Prevent flash of unstyled content
