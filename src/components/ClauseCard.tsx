@@ -1,0 +1,111 @@
+'use client';
+
+import { useState } from 'react';
+import { ChevronDown, ChevronRight, MessageCircle } from 'lucide-react';
+import { ClauseData, CLAUSE_TYPE_NAMES, RISK_COLORS } from '@/types';
+import RiskBadge from './RiskBadge';
+
+interface ClauseCardProps {
+  clause: ClauseData;
+  onAskQuestion: (clauseType: string) => void;
+}
+
+export default function ClauseCard({ clause, onAskQuestion }: ClauseCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const colors = RISK_COLORS[clause.riskLevel];
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      {/* Header - Clickable to expand/collapse */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          {isExpanded ? (
+            <ChevronDown className="w-5 h-5 text-gray-400" />
+          ) : (
+            <ChevronRight className="w-5 h-5 text-gray-400" />
+          )}
+          <span className="font-medium text-gray-900">
+            {CLAUSE_TYPE_NAMES[clause.type]}
+          </span>
+        </div>
+        <RiskBadge level={clause.riskLevel} />
+      </button>
+
+      {/* Expanded Content */}
+      {isExpanded && (
+        <div className="px-4 pb-4 space-y-4">
+          {/* Original Text */}
+          <div
+            className="p-4 rounded-lg border-l-4"
+            style={{
+              backgroundColor: colors.lightBg,
+              borderLeftColor: colors.border,
+            }}
+          >
+            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+              Contract Text
+            </h4>
+            <p className="text-sm text-gray-700 leading-relaxed italic">
+              &quot;{clause.originalText}&quot;
+            </p>
+          </div>
+
+          {/* Plain Language Explanation */}
+          <div className="p-4 rounded-lg bg-[#e8f4fd] border border-[#b8daff]">
+            <h4 className="text-xs font-semibold text-[#1a365d] uppercase mb-2">
+              Plain Language
+            </h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {clause.plainLanguageExplanation}
+            </p>
+          </div>
+
+          {/* Risk Reasons */}
+          <div>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+              Why this risk level
+            </h4>
+            <ul className="space-y-1.5">
+              {clause.riskReasons.map((reason, index) => (
+                <li
+                  key={index}
+                  className="text-sm text-gray-600 flex items-start gap-2"
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
+                    style={{ backgroundColor: colors.bg }}
+                  />
+                  {reason}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Override Justification (if applicable) */}
+          {clause.isOverride && clause.overrideJustification && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <h4 className="text-xs font-semibold text-amber-700 uppercase mb-1">
+                Special Consideration
+              </h4>
+              <p className="text-sm text-amber-800">
+                {clause.overrideJustification}
+              </p>
+            </div>
+          )}
+
+          {/* Ask Question Button */}
+          <button
+            onClick={() => onAskQuestion(clause.type)}
+            className="flex items-center gap-2 px-3 py-2 text-sm text-[#1a365d] hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            <MessageCircle className="w-4 h-4" />
+            Ask a question about this
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

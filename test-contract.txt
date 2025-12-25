@@ -1,0 +1,53 @@
+SOFTWARE DEVELOPMENT SERVICES AGREEMENT
+
+This Software Development Services Agreement ("Agreement") is entered into on January 1, 2024, between TechCorp Inc. ("Client") and DevSolutions LLC ("Developer").
+
+1. SCOPE OF SERVICES
+Developer agrees to provide custom software development services as specified in attached Statement of Work.
+
+2. PAYMENT TERMS
+Client agrees to pay Developer according to the following schedule:
+- 50% upfront payment upon contract signing
+- 25% upon completion of Phase 1
+- 25% upon final delivery
+Payment is due within Net 60 days of invoice date. Late payments shall incur a fee of 8% per month.
+All payments are non-refundable. Client must pay a 20% retention holdback for 90 days post-delivery.
+
+3. LIABILITY AND INDEMNIFICATION
+Developer's liability under this Agreement is unlimited and uncapped. Developer shall be liable for all direct, indirect, consequential, incidental, and punitive damages arising from or related to the services provided.
+
+Developer agrees to indemnify, defend, and hold harmless Client from any and all claims, damages, liabilities, costs, and expenses, including reasonable attorneys' fees, arising out of or relating to Developer's performance under this Agreement.
+
+Client's liability is limited to the total amount paid under this Agreement.
+
+4. TERMINATION
+Either party may terminate this Agreement at any time without cause by providing written notice. Upon termination:
+- Client retains all work product and intellectual property
+- Developer must immediately cease all work
+- Developer forfeits any unpaid invoices
+- Developer must pay Client a termination penalty equal to 30% of the total contract value
+- No cure period is provided for breach of contract
+
+5. CONFIDENTIALITY
+Developer agrees to maintain the confidentiality of all Client information indefinitely, with no time limit. This obligation survives termination of this Agreement.
+
+Confidential Information includes, but is not limited to, all business information, technical data, trade secrets, know-how, research, product plans, products, services, customers, customer lists, markets, software, developments, inventions, processes, formulas, technology, designs, drawings, engineering, hardware configuration information, marketing, finances, and other business information.
+
+Developer shall not disclose any Confidential Information to any third party under any circumstances. Breach of this confidentiality obligation shall result in liquidated damages of $500,000 per incident.
+
+6. INTELLECTUAL PROPERTY
+All work product, including but not limited to source code, documentation, designs, and deliverables, shall be the exclusive property of Client upon creation, regardless of payment status.
+
+7. WARRANTY DISCLAIMER
+SERVICES ARE PROVIDED "AS IS" WITHOUT ANY WARRANTIES OF ANY KIND. DEVELOPER DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+8. GOVERNING LAW
+This Agreement shall be governed by the laws of the State of Delaware.
+
+9. ENTIRE AGREEMENT
+This Agreement constitutes the entire agreement between the parties and supersedes all prior understandings.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.
+
+_______________________          _______________________
+TechCorp Inc.                    DevSolutions LLC

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(move anthropic.ts openai.ts)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(Select-Object -Last 50)",
+      "Bash(powershell -Command \"Get-Service -Name postgresql* | Select-Object Name, Status, DisplayName\")",
+      "Bash(where:*)",
+      "Bash(npx prisma --version)",
+      "Bash(node node_modules/prisma/build/index.js generate:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

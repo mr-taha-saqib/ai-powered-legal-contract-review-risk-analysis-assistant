@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Contract {
+  id            String   @id @default(cuid())
+  filename      String   // unique stored filename
+  originalName  String   // original upload filename
+  fileType      String   // "pdf" | "docx" | "txt"
+  fileSize      Int
+  filePath      String   // path to stored file in /uploads
+  extractedText String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  analysis     Analysis?
+  chatMessages ChatMessage[]
+}
+
+model Analysis {
+  id         String   @id @default(cuid())
+  contractId String   @unique
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  overallRiskLevel String // "low" | "medium" | "high"
+  summary          String
+  rawResponse      String // full AI response for debugging (JSON stringified)
+
+  clauses Clause[]
+
+  createdAt DateTime @default(now())
+}
+
+model Clause {
+  id         String   @id @default(cuid())
+  analysisId String
+  analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  type                     String  // "liability" | "termination" | "confidentiality" | "payment"
+  originalText             String
+  riskLevel                String  // "low" | "medium" | "high"
+  plainLanguageExplanation String
+  riskReasons              String  // array of strings (JSON stringified)
+  isOverride               Boolean @default(false)
+  overrideJustification    String?
+
+  createdAt DateTime @default(now())
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  role          String  // "user" | "assistant"
+  content       String
+  clauseContext String? // optional: clause type if asking about specific clause
+
+  createdAt DateTime @default(now())
+}
