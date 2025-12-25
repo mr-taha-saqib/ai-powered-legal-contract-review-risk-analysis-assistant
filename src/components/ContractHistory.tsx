@@ -26,7 +26,7 @@ export default function ContractHistory({
         {[1, 2, 3].map(i => (
           <div
             key={i}
-            className="bg-gray-100 animate-pulse rounded-lg p-4 h-20"
+            className="bg-gray-100 dark:bg-gray-700 animate-pulse rounded-lg p-4 h-20"
           />
         ))}
       </div>
@@ -35,8 +35,8 @@ export default function ContractHistory({
 
   if (contracts.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+        <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
         <p className="text-sm">No contracts yet</p>
         <p className="text-xs mt-1">Upload your first contract to get started</p>
       </div>
@@ -45,7 +45,7 @@ export default function ContractHistory({
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-gray-600 mb-3">
+      <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">
         Analysis History
       </h3>
       {contracts.map(contract => (
@@ -53,19 +53,19 @@ export default function ContractHistory({
           key={contract.id}
           onClick={() => onSelect(contract.id)}
           className={`
-            group relative bg-white rounded-lg p-3 cursor-pointer transition-all
+            group relative bg-white dark:bg-gray-700 rounded-lg p-3 cursor-pointer transition-all
             border-l-4 hover:shadow-sm
             ${selectedId === contract.id
-              ? 'border-l-[#1a365d] bg-blue-50'
-              : 'border-l-transparent hover:border-l-gray-300'}
+              ? 'border-l-[#1a365d] dark:border-l-blue-400 bg-blue-50 dark:bg-blue-950'
+              : 'border-l-transparent hover:border-l-gray-300 dark:hover:border-l-gray-600'}
           `}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {contract.originalName}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {formatDate(contract.createdAt)}
               </p>
             </div>
@@ -78,7 +78,7 @@ export default function ContractHistory({
                   e.stopPropagation();
                   onDelete(contract.id);
                 }}
-                className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="p-1 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                 title="Delete contract"
               >
                 <Trash2 className="w-4 h-4" />
@@ -86,7 +86,7 @@ export default function ContractHistory({
             </div>
           </div>
           {contract.analysis && (
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               {contract.analysis.clauseCount} clause{contract.analysis.clauseCount !== 1 ? 's' : ''} detected
             </p>
           )}

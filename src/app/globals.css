@@ -41,17 +41,33 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
-    --surface: #1e293b;
-    --surface-secondary: #334155;
-    --border: #475569;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-  }
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+
+  /* Dark mode primary colors */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
+
+  --secondary: #f1f5f9;
+  --accent: #06b6d4;
+
+  /* Risk Colors - adjusted for dark mode */
+  --risk-high: #ef4444;
+  --risk-high-bg: #1e1b1b;
+  --risk-medium: #f97316;
+  --risk-medium-bg: #1c1917;
+  --risk-low: #10b981;
+  --risk-low-bg: #1a1e1b;
+
+  /* Neutral Colors - dark mode */
+  --surface: #1e293b;
+  --surface-secondary: #334155;
+  --border: #475569;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
 }
 
 body {

@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import Header from '@/components/Header';
 import UploadZone from '@/components/UploadZone';
 import ContractHistory from '@/components/ContractHistory';
@@ -115,96 +116,100 @@ export default function Home() {
   // Don't render main content until disclaimer is acknowledged
   if (!isDisclaimerAcknowledged) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <DisclaimerModal onAcknowledge={() => setIsDisclaimerAcknowledged(true)} />
-      </div>
+      <ThemeProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <DisclaimerModal onAcknowledge={() => setIsDisclaimerAcknowledged(true)} />
+        </div>
+      </ThemeProvider>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <Header
-        contractName={selectedContract?.originalName}
-        onExportPdf={handleExportPdf}
-        onOpenChat={() => setIsChatOpen(true)}
-        showExport={!!selectedContract?.analysis}
-        showChat={!!selectedContract}
-      />
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+        {/* Header */}
+        <Header
+          contractName={selectedContract?.originalName}
+          onExportPdf={handleExportPdf}
+          onOpenChat={() => setIsChatOpen(true)}
+          showExport={!!selectedContract?.analysis}
+          showChat={!!selectedContract}
+        />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col md:flex-row">
-        {/* Left Panel - Upload & History */}
-        <aside className="w-full md:w-[350px] bg-white border-r border-gray-200 p-5 flex flex-col gap-6 overflow-y-auto">
-          <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-3">
-              Upload Contract
-            </h2>
-            <UploadZone
-              onUpload={handleUpload}
-              isUploading={isUploading}
-              uploadProgress={uploadProgress}
-            />
-          </div>
-
-          <div className="flex-1 min-h-0">
-            <h2 className="text-sm font-semibold text-gray-900 mb-3">
-              History
-            </h2>
-            <ContractHistory
-              contracts={contracts}
-              selectedId={selectedContract?.id}
-              onSelect={selectContract}
-              onDelete={handleDeleteContract}
-              isLoading={isLoading && contracts.length === 0}
-            />
-          </div>
-        </aside>
-
-        {/* Right Panel - Analysis Results */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          {isLoading && selectedContract ? (
-            <AnalysisResults
-              clauses={[]}
-              summary=""
-              overallRiskLevel="low"
-              onAskQuestion={handleAskQuestion}
-              isLoading={true}
-            />
-          ) : selectedContract?.analysis ? (
-            <AnalysisResults
-              clauses={selectedContract.analysis.clauses}
-              summary={selectedContract.analysis.summary}
-              overallRiskLevel={selectedContract.analysis.overallRiskLevel}
-              onAskQuestion={handleAskQuestion}
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <FileText className="w-10 h-10 text-gray-300" />
-              </div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                No Contract Selected
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col md:flex-row">
+          {/* Left Panel - Upload & History */}
+          <aside className="w-full md:w-[350px] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-5 flex flex-col gap-6 overflow-y-auto">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                Upload Contract
               </h2>
-              <p className="text-gray-500 max-w-md">
-                Upload a contract or select one from your history to view the analysis.
-              </p>
+              <UploadZone
+                onUpload={handleUpload}
+                isUploading={isUploading}
+                uploadProgress={uploadProgress}
+              />
             </div>
-          )}
-        </main>
-      </div>
 
-      {/* Floating Chat */}
-      <FloatingChat
-        isOpen={isChatOpen}
-        onToggle={() => setIsChatOpen(!isChatOpen)}
-        messages={messages}
-        onSendMessage={handleSendMessage}
-        isSending={isSending}
-        contractId={selectedContract?.id}
-        initialClauseContext={clauseContext}
-        onClearClauseContext={handleClearClauseContext}
-      />
-    </div>
+            <div className="flex-1 min-h-0">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                History
+              </h2>
+              <ContractHistory
+                contracts={contracts}
+                selectedId={selectedContract?.id}
+                onSelect={selectContract}
+                onDelete={handleDeleteContract}
+                isLoading={isLoading && contracts.length === 0}
+              />
+            </div>
+          </aside>
+
+          {/* Right Panel - Analysis Results */}
+          <main className="flex-1 p-6 overflow-y-auto">
+            {isLoading && selectedContract ? (
+              <AnalysisResults
+                clauses={[]}
+                summary=""
+                overallRiskLevel="low"
+                onAskQuestion={handleAskQuestion}
+                isLoading={true}
+              />
+            ) : selectedContract?.analysis ? (
+              <AnalysisResults
+                clauses={selectedContract.analysis.clauses}
+                summary={selectedContract.analysis.summary}
+                overallRiskLevel={selectedContract.analysis.overallRiskLevel}
+                onAskQuestion={handleAskQuestion}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                  <FileText className="w-10 h-10 text-gray-300 dark:text-gray-500" />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  No Contract Selected
+                </h2>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                  Upload a contract or select one from your history to view the analysis.
+                </p>
+              </div>
+            )}
+          </main>
+        </div>
+
+        {/* Floating Chat */}
+        <FloatingChat
+          isOpen={isChatOpen}
+          onToggle={() => setIsChatOpen(!isChatOpen)}
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          isSending={isSending}
+          contractId={selectedContract?.id}
+          initialClauseContext={clauseContext}
+          onClearClauseContext={handleClearClauseContext}
+        />
+      </div>
+    </ThemeProvider>
   );
 }
