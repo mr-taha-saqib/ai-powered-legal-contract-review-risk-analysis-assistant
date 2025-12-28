@@ -1,7 +1,6 @@
 'use client';
 
 import { FileText, Download, MessageCircle } from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {
   contractName?: string;
@@ -36,8 +35,6 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
-
           {showExport && onExportPdf && (
             <button
               type="button"

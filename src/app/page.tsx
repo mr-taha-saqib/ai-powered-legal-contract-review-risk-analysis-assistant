@@ -7,14 +7,12 @@ import UploadZone from '@/components/UploadZone';
 import ContractHistory from '@/components/ContractHistory';
 import AnalysisResults from '@/components/AnalysisResults';
 import FloatingChat from '@/components/FloatingChat';
-import DisclaimerModal from '@/components/DisclaimerModal';
 import { generatePdfReport } from '@/components/PdfReport';
 import { useContracts } from '@/hooks/useContracts';
 import { useChat } from '@/hooks/useChat';
 import { FileText } from 'lucide-react';
 
 export default function Home() {
-  const [isDisclaimerAcknowledged, setIsDisclaimerAcknowledged] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [clauseContext, setClauseContext] = useState<string | undefined>(undefined);
 
@@ -63,8 +61,22 @@ export default function Home() {
 
   const handleUpload = useCallback(async (file: File) => {
     try {
-      await uploadContract(file);
+      const warnings = await uploadContract(file);
       toast.success('Contract analyzed successfully!');
+
+      // Show warnings if any
+      if (warnings && warnings.length > 0) {
+        warnings.forEach(warning => {
+          toast(warning, {
+            duration: 6000,
+            icon: '⚠️',
+            style: {
+              background: '#f59e0b',
+              color: '#fff',
+            },
+          });
+        });
+      }
     } catch {
       // Error already handled by hook
     }
@@ -111,15 +123,6 @@ export default function Home() {
   const handleSendMessage = useCallback(async (message: string, context?: string) => {
     await sendMessage(message, context || clauseContext);
   }, [sendMessage, clauseContext]);
-
-  // Don't render main content until disclaimer is acknowledged
-  if (!isDisclaimerAcknowledged) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <DisclaimerModal onAcknowledge={() => setIsDisclaimerAcknowledged(true)} />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">

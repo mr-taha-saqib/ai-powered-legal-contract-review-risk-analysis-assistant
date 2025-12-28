@@ -6,10 +6,120 @@ import prisma from '@/lib/prisma';
 import openai, { AI_MODEL } from '@/lib/openai';
 import { parseDocument, getFileTypeFromExtension, validateFileSize, detectNonEnglish, isVeryLongDocument } from '@/lib/documentParser';
 import { buildAnalysisPrompt } from '@/lib/prompts/analysisPrompt';
-import { AnalysisResponse, FileType } from '@/types';
+import { AnalysisResponse } from '@/types';
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads';
 const MAX_FILE_SIZE_MB = parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10);
+const MAX_CHARS_PER_REQUEST = 25000; // ~6000 tokens, safe for 30K token/min limit
+
+/**
+ * Estimate token count (rough approximation: 1 token ≈ 4 characters)
+ */
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4);
+}
+
+/**
+ * Sleep for exponential backoff
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Analyze contract with intelligent chunking and retry logic
+ */
+async function analyzeContractWithRetry(
+  extractedText: string,
+  maxRetries: number = 3
+): Promise<AnalysisResponse> {
+  const estimatedTokens = estimateTokens(extractedText);
+
+  // If contract is very large, truncate or summarize first
+  let textToAnalyze = extractedText;
+  if (extractedText.length > MAX_CHARS_PER_REQUEST) {
+    console.log(`Contract too large (${estimatedTokens} tokens). Truncating to first ${MAX_CHARS_PER_REQUEST} characters.`);
+    textToAnalyze = extractedText.substring(0, MAX_CHARS_PER_REQUEST);
+    textToAnalyze += '\n\n[...Document truncated due to length. Analysis based on first section...]';
+  }
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Analysis attempt ${attempt}/${maxRetries} (${estimateTokens(textToAnalyze)} estimated tokens)`);
+
+      const response = await openai.chat.completions.create({
+        model: AI_MODEL,
+        max_tokens: 4096,
+        response_format: { type: 'json_object' },
+        messages: [
+          {
+            role: 'user',
+            content: buildAnalysisPrompt(textToAnalyze),
+          },
+        ],
+      });
+
+      // Extract text from response
+      const responseText = response.choices[0]?.message?.content || '';
+
+      // Parse JSON response
+      try {
+        const result = JSON.parse(responseText);
+        console.log('Analysis successful');
+        return result;
+      } catch {
+        console.log('JSON parse failed, retrying with explicit instruction...');
+        // Retry with explicit JSON instruction
+        const retryResponse = await openai.chat.completions.create({
+          model: AI_MODEL,
+          max_tokens: 4096,
+          response_format: { type: 'json_object' },
+          messages: [
+            {
+              role: 'user',
+              content: buildAnalysisPrompt(textToAnalyze) + '\n\nIMPORTANT: Respond with valid JSON only.',
+            },
+          ],
+        });
+
+        const retryText = retryResponse.choices[0]?.message?.content || '';
+        const result = JSON.parse(retryText);
+        console.log('Analysis successful on retry');
+        return result;
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+      const errorMessage = lastError.message.toLowerCase();
+
+      // Check if it's a rate limit error
+      if (errorMessage.includes('rate_limit') || errorMessage.includes('quota')) {
+        console.log(`Rate limit hit on attempt ${attempt}. Waiting before retry...`);
+
+        if (attempt < maxRetries) {
+          // Exponential backoff: 2s, 4s, 8s
+          const waitTime = Math.pow(2, attempt) * 1000;
+          console.log(`Waiting ${waitTime}ms before retry...`);
+          await sleep(waitTime);
+          continue;
+        }
+      }
+
+      // For other errors, throw immediately
+      if (!errorMessage.includes('rate_limit') && !errorMessage.includes('quota')) {
+        throw lastError;
+      }
+
+      // If last attempt, throw the error
+      if (attempt === maxRetries) {
+        throw lastError;
+      }
+    }
+  }
+
+  throw lastError || new Error('Analysis failed after all retries');
+}
 
 /**
  * GET /api/contracts
@@ -115,12 +225,19 @@ export async function POST(request: NextRequest) {
 
     // Warnings (non-blocking)
     const warnings: string[] = [];
+    const estimatedTokens = estimateTokens(extractedText);
+
     if (detectNonEnglish(extractedText)) {
-      warnings.push('Best results with English documents');
+      warnings.push('⚠️ This document may not be in English. Best results with English contracts.');
     }
-    if (isVeryLongDocument(extractedText)) {
-      warnings.push('Large document - analysis may take longer');
+
+    if (extractedText.length > MAX_CHARS_PER_REQUEST) {
+      warnings.push(`⚠️ Document is very large (${estimatedTokens.toLocaleString()} estimated tokens). Only the first section will be analyzed to avoid API limits.`);
+    } else if (isVeryLongDocument(extractedText)) {
+      warnings.push(`⚠️ Large document (${estimatedTokens.toLocaleString()} estimated tokens). Analysis may take 10-20 seconds.`);
     }
+
+    console.log(`Contract analysis starting: ${extractedText.length} chars, ${estimatedTokens} estimated tokens`);
 
     // Generate unique filename and save file
     const ext = path.extname(file.name);
@@ -143,49 +260,24 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Call AI for analysis
+    // Call AI for analysis with retry logic and rate limit handling
     let analysisResult: AnalysisResponse;
     try {
-      const response = await openai.chat.completions.create({
-        model: AI_MODEL,
-        max_tokens: 4096,
-        response_format: { type: 'json_object' },
-        messages: [
-          {
-            role: 'user',
-            content: buildAnalysisPrompt(extractedText),
-          },
-        ],
-      });
-
-      // Extract text from response
-      const responseText = response.choices[0]?.message?.content || '';
-
-      // Parse JSON response
-      try {
-        analysisResult = JSON.parse(responseText);
-      } catch {
-        // Retry once if JSON parsing fails
-        const retryResponse = await openai.chat.completions.create({
-          model: AI_MODEL,
-          max_tokens: 4096,
-          response_format: { type: 'json_object' },
-          messages: [
-            {
-              role: 'user',
-              content: buildAnalysisPrompt(extractedText) + '\n\nIMPORTANT: Respond with valid JSON only. No markdown, no explanation, just the JSON object.',
-            },
-          ],
-        });
-
-        const retryText = retryResponse.choices[0]?.message?.content || '';
-        analysisResult = JSON.parse(retryText);
-      }
+      analysisResult = await analyzeContractWithRetry(extractedText);
     } catch (aiError) {
       console.error('AI analysis error:', aiError);
       // Clean up: delete the uploaded file and contract record
       await fs.unlink(filePath).catch(() => {});
       await prisma.contract.delete({ where: { id: contract.id } }).catch(() => {});
+
+      // Check for rate limit error
+      const errorMessage = aiError instanceof Error ? aiError.message : '';
+      if (errorMessage.includes('rate_limit') || errorMessage.includes('quota')) {
+        return NextResponse.json(
+          { error: 'OpenAI rate limit reached. Please try again in a few moments or use a shorter contract.' },
+          { status: 429 }
+        );
+      }
 
       return NextResponse.json(
         { error: 'Analysis service unavailable. Please try again.' },

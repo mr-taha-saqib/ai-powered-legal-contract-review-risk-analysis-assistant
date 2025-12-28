@@ -1,4 +1,4 @@
-import { ClauseData, AnalysisResponse } from '@/types';
+import { ClauseData } from '@/types';
 
 export const CHAT_SYSTEM_PROMPT = `You are a helpful legal contract assistant. Your role is to answer questions about contracts and legal terms in an accessible, informative way.
 

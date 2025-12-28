@@ -1,6 +1,6 @@
 'use client';
 
-import { FileQuestion, Loader2, TrendingUp, TrendingDown, Minus, Shield } from 'lucide-react';
+import { FileQuestion, Loader2 } from 'lucide-react';
 import { ClauseData, RiskLevel } from '@/types';
 import RiskBadge from './RiskBadge';
 import ClauseCard from './ClauseCard';

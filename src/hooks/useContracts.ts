@@ -6,8 +6,6 @@ import {
   ContractWithAnalysis,
   ChatMessageData,
   UploadResponse,
-  ClauseData,
-  RiskLevel,
 } from '@/types';
 
 interface UseContractsReturn {
@@ -23,7 +21,7 @@ interface UseContractsReturn {
   // Actions
   fetchContracts: () => Promise<void>;
   selectContract: (id: string) => Promise<void>;
-  uploadContract: (file: File) => Promise<void>;
+  uploadContract: (file: File) => Promise<string[] | undefined>;
   deleteContract: (id: string) => Promise<void>;
   clearError: () => void;
   clearSelection: () => void;
@@ -150,9 +148,11 @@ export function useContracts(): UseContractsReturn {
       // Fetch full contract details
       await selectContract(data.contract.id);
 
-      // Show warnings if any
+      // Return warnings to be displayed by the caller
       if (data.warnings && data.warnings.length > 0) {
         console.log('Warnings:', data.warnings);
+        // Warnings will be shown by toast notifications in the calling component
+        return data.warnings;
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');

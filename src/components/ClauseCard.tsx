@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, MessageCircle, FileText, Lightbulb, AlertCircle } from 'lucide-react';
+import { ChevronDown, ChevronRight, MessageCircle } from 'lucide-react';
 import { ClauseData, CLAUSE_TYPE_NAMES, RISK_COLORS } from '@/types';
 import RiskBadge from './RiskBadge';
 
@@ -14,20 +14,11 @@ export default function ClauseCard({ clause, onAskQuestion }: ClauseCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const colors = RISK_COLORS[clause.riskLevel];
 
-  const getBorderColor = () => {
-    switch (clause.riskLevel) {
-      case 'high': return 'border-red-200 hover:border-red-300';
-      case 'medium': return 'border-yellow-200 hover:border-yellow-300';
-      case 'low': return 'border-green-200 hover:border-green-300';
-      default: return 'border-gray-200';
-    }
-  };
-
   const getGradient = () => {
     switch (clause.riskLevel) {
-      case 'high': return 'from-red-50 to-pink-50';
-      case 'medium': return 'from-yellow-50 to-orange-50';
-      case 'low': return 'from-green-50 to-emerald-50';
+      case 'high': return 'from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950';
+      case 'medium': return 'from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950';
+      case 'low': return 'from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950';
       default: return 'from-gray-50 to-slate-50';
     }
   };

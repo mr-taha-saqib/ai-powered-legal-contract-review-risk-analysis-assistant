@@ -131,34 +131,62 @@ export async function POST(
     // Check for sensitive topic
     const needsEnhancedDisclaimer = isSensitiveTopic(trimmedMessage);
 
-    // Call OpenAI API
-    let aiResponse: string;
-    try {
-      const response = await openai.chat.completions.create({
-        model: AI_MODEL,
-        max_tokens: 1024,
-        messages: [
-          {
-            role: 'system',
-            content: CHAT_SYSTEM_PROMPT,
-          },
-          ...messages,
-        ],
-      });
+    // Call OpenAI API with retry logic
+    let aiResponse: string = '';
+    const maxRetries = 2;
 
-      aiResponse = response.choices[0]?.message?.content || 'I apologize, but I was unable to generate a response. Please try again.';
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Chat request attempt ${attempt}/${maxRetries}`);
 
-      // Add enhanced disclaimer if needed
-      if (needsEnhancedDisclaimer) {
-        const topic = getSensitiveTopic(trimmedMessage);
-        aiResponse += `\n\n---\n\n*${DISCLAIMER_TEXT.enhanced(topic)}*`;
+        const response = await openai.chat.completions.create({
+          model: AI_MODEL,
+          max_tokens: 1024,
+          messages: [
+            {
+              role: 'system',
+              content: CHAT_SYSTEM_PROMPT,
+            },
+            ...messages,
+          ],
+        });
+
+        aiResponse = response.choices[0]?.message?.content || 'I apologize, but I was unable to generate a response. Please try again.';
+
+        // Add enhanced disclaimer if needed
+        if (needsEnhancedDisclaimer) {
+          const topic = getSensitiveTopic(trimmedMessage);
+          aiResponse += `\n\n---\n\n*${DISCLAIMER_TEXT.enhanced(topic)}*`;
+        }
+
+        console.log('Chat response generated successfully');
+        break; // Success, exit retry loop
+      } catch (aiError) {
+        console.error(`Chat error on attempt ${attempt}:`, aiError);
+
+        const errorMessage = aiError instanceof Error ? aiError.message.toLowerCase() : '';
+
+        // Check for rate limit
+        if (errorMessage.includes('rate_limit') || errorMessage.includes('quota')) {
+          if (attempt < maxRetries) {
+            console.log('Rate limit hit, waiting before retry...');
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+            continue;
+          }
+          return NextResponse.json(
+            { error: 'Chat service is temporarily rate-limited. Please wait a moment and try again.' },
+            { status: 429 }
+          );
+        }
+
+        // For other errors on last attempt, return error
+        if (attempt === maxRetries) {
+          return NextResponse.json(
+            { error: 'Chat service unavailable. Please try again.' },
+            { status: 500 }
+          );
+        }
       }
-    } catch (aiError) {
-      console.error('AI chat error:', aiError);
-      return NextResponse.json(
-        { error: 'Chat service unavailable. Please try again.' },
-        { status: 500 }
-      );
     }
 
     // Save both messages to database

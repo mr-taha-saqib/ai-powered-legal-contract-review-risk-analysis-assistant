@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { storage, DISCLAIMER_ACKNOWLEDGED_KEY, DISCLAIMER_TEXT } from '@/lib/utils';
 
 interface DisclaimerModalProps {
@@ -10,17 +10,17 @@ interface DisclaimerModalProps {
 
 export default function DisclaimerModal({ onAcknowledge }: DisclaimerModalProps) {
   const [isChecked, setIsChecked] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  // Check if already acknowledged on initial render
+  const acknowledged = storage.get(DISCLAIMER_ACKNOWLEDGED_KEY, false);
+  const [isVisible, setIsVisible] = useState(!acknowledged);
 
   useEffect(() => {
-    // Check if user has already acknowledged
-    const acknowledged = storage.get(DISCLAIMER_ACKNOWLEDGED_KEY, false);
-    if (!acknowledged) {
-      setIsVisible(true);
-    } else {
+    // If already acknowledged, call the callback
+    if (acknowledged) {
       onAcknowledge();
     }
-  }, [onAcknowledge]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   const handleContinue = () => {
     if (!isChecked) return;

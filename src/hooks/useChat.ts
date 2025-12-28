@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { ChatMessageData, ChatResponse } from '@/types';
+import { ChatMessageData } from '@/types';
 
 interface UseChatReturn {
   messages: ChatMessageData[];
