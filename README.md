@@ -170,7 +170,7 @@ bun install
 
 ### Step 3: Environment Configuration
 
-Create a `.env` file in the root directory:
+Create `.env` file in the root directory:
 
 ```bash
 # OpenAI API Configuration
